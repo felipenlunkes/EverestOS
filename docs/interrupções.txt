@@ -1,0 +1,657 @@
+Lista de interrupções do Sistema Operacional Everest®
+
+Copyright © 2016 Felipe Miguel Nery Lunkes
+Todos os direitos reservados
+
+===============================================================================
+
+int 20h - Finalizar o programa em execução e entregar o controle ao Everest®
+
+ENTRADA:
+
+    AX - Código de erro, caso exista
+
+SAÍDA:
+
+    Nada
+
+===============================================================================
+
+int 21h - Habilitar debug do Sistema e aplicativos (Experimental)
+
+ENTRADA:
+
+    Nada
+	
+SAÍDA:
+
+    Nada	
+
+===============================================================================
+
+int 22h - Desabilitar debug do Sistema e aplicativos (Experimental)
+
+ENTRADA:
+
+    Nada
+	
+SAÍDA:
+
+    Nada
+	
+===============================================================================
+
+int 23h - Verificar estadodo debug do Sistema e aplicativos (Experimental)
+
+ENTRADA:
+
+    Nada
+	
+SAÍDA:
+
+    AX - estado do debug (1 = habilitado, 0 = desabilitado) 
+	
+===============================================================================
+
+int 24h - Inicializar o manipulador de impressoras
+
+ENTRADA:
+
+    Nada
+	
+SAÍDA:
+
+    Nada
+	
+===============================================================================
+
+int 25h - Imprimir mensagem na impressora padrão
+
+ENTRADA:
+
+    SI - Mensagem terminada em 0
+
+SAÍDA:
+
+    AX - Código de retorno (0 = sucesso, 1 = erro)
+
+===============================================================================
+
+int 26h - Solicitar o recebimento de dados via teclado
+
+ENTRADA:
+
+    Nada
+
+SAÍDA:
+
+    SI - Conteúdo que foi inserido via teclado
+
+===============================================================================
+
+int 27h - Causar atraso (utilizando RTC, mais eficiente e confiável)
+
+ENTRADA:
+
+    Nada
+
+SAÍDA:
+
+    Nada
+
+
+===============================================================================
+
+int 37h - Devolver controle ao Escalonador de Tarefas
+
+Faz com que a tarefa atualmente em execução ceda o processamento a outra. 
+Usado quando um aplicativo em execução deseja ceder a outro aplicativo o
+processamento.
+
+ENTRADA:
+
+    Nada
+
+SAÍDA:
+
+    Nada
+
+===============================================================================
+
+int 60h - Habilitar Interface Gráfica (GUI) - Experimental
+
+ENTRADA:
+
+    Nada
+
+SAÍDA: 
+
+    Nada
+
+===============================================================================
+	
+int 80h - Enviar sequência de texto para a tela atual
+
+Não deve ser usada pelos aplicativos em multitarefa.
+
+ENTRADA:
+
+    DS: SI - ponteiro para primeiro caractere terminada em zero cadeia
+
+SAÍDA:
+
+    Nada
+
+===============================================================================
+
+
+int 81h - Carregar arquivo a partir do disco 
+
+O disco a partir do qual o sistema operacional inicializado é usado.
+
+ENTRADA:
+
+    DS: SI - ponteiro para buffer de 11 bytes contendo nome do arquivo no formato FAT12
+             Exemplo: para "URSO.APP", a reserva conteria "URSO APP"
+    ES: DI - indicação de onde serão carregados os dados do arquivo, arredondado para mais próximo de 512 bytes
+
+SAÍDA:
+
+    AL - resultado (0 = sucesso, 1 = não encontrado)
+
+===============================================================================
+    
+int 82h - Converter string para maiúsculo
+
+ENTRADA:
+
+    DS: SI - ponteiro para primeiro caractere terminado em zero
+             Exemplo: msg db "Oi!",0
+
+SAÍDA:
+
+    Nada
+
+===============================================================================
+
+int 83h - Limpar buffer de teclado
+
+ENTRADA:
+
+    Nada
+
+SAÍDA:
+
+    Nada
+
+===============================================================================
+    
+int 84h - Obter contagem no temporizador do Kernel
+
+O temporizador do sistema é iniciado assim que o kernel é inicializado.
+Por padrão, o temporizador do sistema ocila cerca de 18,2 vezes por segundo.
+
+ENTRADA:
+
+    Nada
+
+SAÍDA:
+
+    AX - Contagem
+
+===============================================================================
+    
+int 85h - Causar atraso (delay) - Sistema ocupado
+
+Por padrão, o temporizador do sistema ocila cerca de 18,2 vezes por segundo.
+
+ENTRADA:
+
+    CX - Número de contagens do temporizador para causar atraso
+
+SAÍDA:
+
+    Nada
+
+===============================================================================
+   
+int 86h - Obter próximo número aleatório
+
+ENTRADA:
+
+    Nada
+
+SAÍDA:
+
+    AX - Próximo número aleatório
+
+===============================================================================
+    
+int 87h - Carregar diretório raiz do disco FAT12 utilizado na inicialização
+
+O disco a partir do qual o sistema operacional foi inicializado é usado.
+Cada entrada de diretório FAT12 de 32 bytes tem o seguinte formato:
+
+Nome 0-10 Arquivo (8 bytes) com a extensão (3 bytes)
+11 Atributo - um bitvector. Bit 0: somente leitura. Bit 1: oculto.
+        Bit 2: arquivo de sistema. Bit 3: etiqueta de volume. Bit 4: subdiretório.
+        Bit 5: Arquivo. Os bits 6-7: não utilizados.
+12-21 Reservado (ver abaixo)
+22-23 Tempo
+24-25 Data
+26-27 A partir cluster (0 para um arquivo vazio)
+28-31 tamanho do arquivo em bytes
+
+ENTRADA:
+
+    ES: DI - Indicação de onde o diretório raiz será carregado
+
+SAÍDA:
+
+    AX - Número de entradas de diretório raiz FAT12 de 32 bytes carregado
+
+===============================================================================
+    
+int 88h - Realizar despejo de memória para a tela
+
+Grava diretamente para a memória de vídeo. Não é adequado para tarefas que precisam gravar
+em sua área de trabalho virtual em multitarefa.
+
+ENTRADA:
+
+    DS: SI - Ponteiro para o primeiro byte para exibir
+
+SAÍDA:
+
+    CX - Número de bytes para exibir
+
+===============================================================================
+    
+int 89h - Reproduzir som no alto-falante interno
+
+O som é sustentado até o alto-falante ser silenciado através da int 8Ah.
+O número das frequências pode ser obtido a partir da tabela seguinte:
+
+Nota Frequência #
+C 130,81 9121
+C # 138,59 8609
+D 146.83 8126
+D # 155,56 7670
+E 164,81 7239
+F 174,61 6833
+F # 185,00 6449
+G 196.00 6087
+G # 207,65 5746
+Um 220,00 5423
+A # 233,08 5119
+B 246,94 4831
+Médio C 261,63 4560
+C # 277,18 4304
+D 293,66 4063
+D # 311,13 3834
+E 329,63 3619
+F 349,23 3416
+F # 369.99 3224
+G 391,00 3043
+G # 415,30 2873
+Um 440,00 2711
+A # 466,16 2559
+B 493,88 2415
+C 523,25 2280
+C # 554,37 2152
+D 587,33 2031
+D # 622,25 1917
+E 659,26 1809
+F 698,46 1715
+F # 739,99 1612
+G 783,99 1521
+G # 830,61 1436
+Um 880,00 1355
+Uma # 923,33 1292
+B 987,77 1207
+C 1.046,50 1140
+
+ENTRADA:
+
+    AX - Número da frequência de som para reproduzir
+
+SAÍDA:
+
+    Nada
+
+===============================================================================
+    
+int 8Ah - Silenciar o alto-falante interno do computador
+
+Esta interrupção é usada para desligar o alto-falante depois de um som emitido por um período de tempo desejado.
+
+ENTRADA:
+
+    Nada
+
+SAÍDA:
+
+    Nada
+
+===============================================================================
+
+int 8Bh - Evento de interrupção do mouse
+
+Recebe 3 bytes de dados brutos do mouse em cima de um evento de mouse ocorrendo.
+Esse manipulador pode ser substituído por um manipulador personalizado para o acesso a dados brutos do mouse. Uma vez ultrapassado, "administrado" modo de via interrupção 8Fh (veja abaixo) se torna indisponível.
+
+ENTRADA:
+
+    BH - bit 7 - estouro em Y
+         bit 6 - estouro em X
+         bit 5 - bit de sinal Y
+         bit 4 - bit de sinal X
+         bit 3 - não utilizado e indeterminado
+         bit 2 - botão do meio
+         bit 1 - botão direito
+         botão esquerdo - bit 0
+    DH - Movimento X (delta X)
+    DL - movimento Y (delta Y)
+
+SAÍDA:
+
+    Nada
+
+===============================================================================
+
+int 8Ch - Dados brutos do mouse
+
+Retorna o último dado recebido através de um evento do mouse.
+
+ENTRADA:
+
+    Nada
+
+SAÍDA:
+
+    BH - bit 7 - estouro em Y
+         bit 6 - estouro em X
+         bit 5 - bit de sinal Y
+         bit 4 - bit de sinal X
+         bit 3 - não utilizado e indeterminado
+         bit 2 - botão do meio
+         bit 1 - botão direito
+         botão esquerdo - bit 0
+    DH - Movimento X (delta X)
+    DL - movimento Y (delta Y)
+
+===============================================================================
+
+int 8DH - Obter status do Driver do mouse
+
+Retorna o estado de carregamento do Driver de mouse PS/2.
+
+ENTRADA:
+
+    Nada
+
+SAÍDA:
+
+    AL - 1 Se o Driver foi carregado, 0 caso contrário
+
+===============================================================================
+
+int 8EH - Imprimir byte
+
+Imprime o valor de um byte para a tela (hexadecimal).
+
+Grava diretamente para a memória de vídeo. Não é adequado para tarefas que precisam gravar em
+sua própria área de trabalho virtual na multitarefa.
+
+ENTRADA:
+
+    AL - byte para imprimir
+
+SAÍDA:
+
+    Nada
+
+===============================================================================
+
+int 8Fh - Manipulador de mouse
+
+Recebe especificações de coordenadas especificadas pelo programador.
+ Veja na int 90h abaixo como essas coordenadas são especificadas.
+ 
+ENTRADA:
+
+    Nada
+
+SAÍDA:
+
+    AL - os bits 3-7 - não utilizados e indeterminados
+         bit 2 - botão do meio do estado atual
+         bit 1 - botão direito do estado atual
+         bit 0 - o botão esquerdo do estado atual
+    BX - posição X em coordenadas do usuário
+    DX - posição Y em coordenadas do usuário
+
+===============================================================================
+
+int 90h - Inicializar manipulador de mouse
+
+Depois de chamar isto, um programa será capaz de consultar o manipulador do mouse
+(via int 8Fh acima), para obter a localização do mouse e estado dos botões.
+
+ENTRADA:
+
+    BX - Largura da caixa delimitadora em que o cursor do mouse se moverá
+    DX - Altura da caixa delimitadora em que o cursor do mouse se moverá
+
+SAÍDA:
+
+    Nada
+
+===============================================================================
+
+int 91h - Alocar memória
+
+Aloca um segmento de memória.
+
+ENTRADA:
+
+    Nada
+
+SAÍDA:
+
+    AX - 0 quando a alocação foi realizada com sucesso
+    BX - Número do segmento recém-alocado, quando bem sucedido
+
+===============================================================================
+
+int 92H - Liberar memória
+
+Libera um segmento de memória, tornando-o disponível para alocação.
+
+ENTRADA:
+
+    BX - Segmento para liberar
+
+SAÍDA:
+
+    Nada
+
+===============================================================================
+
+int 93H - Adicionar tarefa ao Escalonador
+
+Adiciona uma tarefa para o Escalonador, preparando-o para a execução.
+
+ENTRADA:
+
+    BX - Segmento que contém o aplicativo a ser adicionado como uma tarefa
+
+SAÍDA:
+
+    AX - ID da tarefa recém-adicionada
+
+===============================================================================
+
+int 96h - Ativar área de trabalho virtual para tarefa específica
+
+Faz ativa a área de trabalho virtual para a tarefa especificada.
+
+ENTRADA:
+
+    AX - ID da tarefa cuja área de trabalho virtual deve ser feita ativa
+
+SAÍDA:
+
+    Nada
+
+===============================================================================
+
+int 97H - Escreve mensagem na área de trabalho virtual atual
+
+Adequado para escrever na área de trabalho virtual isolada de uma tarefa, sem
+interferir com as exibições de outras tarefas.
+
+ENTRADA:
+
+    DS: SI - Ponteiro para primeiro caractere terminado em zero
+
+SAÍDA:
+
+    Nada
+
+===============================================================================
+
+int 97H - Escreve caractere na área de trabalho virtual atual
+
+Adequado para escrever na área de trabalho virtual isolada de uma tarefa, sem
+interferir com as exibições de outras tarefas.
+
+ENTRADA:
+
+    DL - caracteres ASCII para escrever
+
+SAÍDA:
+
+    Nada
+
+===============================================================================
+
+int 99h - Obter status da tarefa via Escalonador
+
+Retorna o status da tarefa especificada.
+
+ENTRADA:
+
+    AX - ID da tarefa
+
+SAÍDA:
+
+    AX - O status da tarefa como segue: 0FFFFh = "não presente"
+
+===============================================================================
+
+int 9Ah - Obter ID da tarefa atual via Escalonador
+
+Retorna o ID da tarefa atualmente em execução.
+
+ENTRADA:
+
+    Nada
+
+SAÍDA:
+
+    AX - ID da tarefa de tarefa atualmente em execução
+
+===============================================================================
+
+int 9BH - Preparar para desligamento do computador
+
+Tenta colocar o computador em um estado desligado via APM.
+
+ENTRADA:
+
+    Nada
+
+SAÍDA:
+
+    AX com códigos de erro:
+
+        0 = A verificação de instalação falhou
+        1 = A conexão em modo real falhou
+        2 = A versão 1.2 dp Driver APM não é suportada
+        3 = A mudança de estado para "off" falhou
+
+===============================================================================
+
+int 9Dh - Iniciar portas seriais para comunicação
+
+ENTRADA:
+
+    Nada
+	
+SAÍDA:
+
+    Nada	
+	
+===============================================================================
+
+int 9Eh - Enviar uma mensagem via porta serial
+
+ENTRADA:
+
+    SI - Mensagem terminada em zero
+         Exemplo: msg db "Oi Porta Serial!", 0
+
+SAÍDA:
+
+    Nada	
+
+===============================================================================
+
+int 9Fh - Receber mensagem via porta serial (útil para Linux, por exemplo)
+
+ENTRADA:
+
+    Nada
+
+SAÍDA:
+
+    SI - Mensagem recebida, terminada em zero
+
+===============================================================================
+
+int A2h - Obter informações do processador
+
+ENTRADA:
+
+    Nada
+
+SAÍDA:
+
+    SI - Mensagem com as informações do processador
+
+===============================================================================
+
+int A3h - Retorna as informações de versão do Sistema
+
+ENTRADA:
+
+	Nada
+
+SAÍDA:
+
+    AX - Versão do Sistema
+    BX - Subversão do Sistema
+    CX - Revisão do Software
+
+===============================================================================
+
+int A4h - Converter para String
+
+ENTRADA:
+
+    AX - O que se deseja converter
+
+SAÍDA:
+
+    AX - Conteúdo convertido	
